@@ -75,8 +75,6 @@ class TimerActivity : AppCompatActivity() {
     private fun initTimer(){
         timerState = PrefUtil.getTimerState(this)
 
-        setNewTimerLength()
-
         //we don't want to change the length of the timer which is already running
         //if the length was changed in settings while it was backgrounded
         if (timerState == TimerState.Stopped)
