@@ -1,17 +1,43 @@
 package com.resocoder.timertutorial
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.resocoder.timertutorial.util.PrefUtil
-
 import kotlinx.android.synthetic.main.activity_timer.*
 import kotlinx.android.synthetic.main.content_timer.*
+import java.util.*
 
 class TimerActivity : AppCompatActivity() {
+
+    companion object {
+        fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long{
+            val wakeUpTime = (nowSeconds + secondsRemaining) * 1000
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(context, TimerExpiredReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
+            PrefUtil.setAlarmSetTime(nowSeconds, context)
+            return wakeUpTime
+        }
+
+        fun removeAlarm(context: Context){
+            val intent = Intent(context, TimerExpiredReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.cancel(pendingIntent)
+            PrefUtil.setAlarmSetTime(0, context)
+        }
+
+        val nowSeconds: Long
+            get() = Calendar.getInstance().timeInMillis / 1000
+    }
 
     enum class TimerState{
         Stopped, Paused, Running
@@ -53,7 +79,8 @@ class TimerActivity : AppCompatActivity() {
 
         initTimer()
 
-        //TODO: remove background timer, hide notification
+        removeAlarm(this)
+        //TODO: hide notification
     }
 
     override fun onPause() {
@@ -61,7 +88,8 @@ class TimerActivity : AppCompatActivity() {
 
         if (timerState == TimerState.Running){
             timer.cancel()
-            //TODO: start background timer and show notification
+            val wakeUpTime = setAlarm(this, nowSeconds, secondsRemaining)
+            //TODO: show notification
         }
         else if (timerState == TimerState.Paused){
             //TODO: show notification
@@ -89,10 +117,13 @@ class TimerActivity : AppCompatActivity() {
         else
             timerLengthSeconds
 
-        //TODO: change secondsRemaining according to where the background timer stopped
+        val alarmSetTime = PrefUtil.getAlarmSetTime(this)
+        if (alarmSetTime > 0)
+            secondsRemaining -= nowSeconds - alarmSetTime
 
-        //resume where we left off
-        if (timerState == TimerState.Running)
+        if (secondsRemaining <= 0)
+            onTimerFinished()
+        else if (timerState == TimerState.Running)
             startTimer()
 
         updateButtons()
