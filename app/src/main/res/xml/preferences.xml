@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.pavelsikun.seekbarpreference.SeekBarPreferenceCompat
+        android:key="com.resocoder.timer.timer_length"
+        android:title="Timer Length"
+        android:summary="For how many minutes should the timer run?"
+        android:defaultValue="10"
+        app:msbp_minValue="1"
+        app:msbp_maxValue="60"
+        app:msbp_interval="1"
+        app:msbp_measurementUnit="minutes"
+        app:msbp_dialogEnabled="true"/>
+
+</android.support.v7.preference.PreferenceScreen>
