@@ -45,5 +45,4 @@
                 android:value="com.resocoder.timertutorial.TimerActivity" />
         </activity>
     </application>
-
 </manifest>
