@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.resocoder.timertutorial.util.NotificationUtil
@@ -18,15 +18,15 @@ import java.util.*
 class TimerActivity : AppCompatActivity() {
 
     companion object {
-        fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long{
-            val wakeUpTime = (nowSeconds + secondsRemaining) * 1000
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intent = Intent(context, TimerExpiredReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
-            PrefUtil.setAlarmSetTime(nowSeconds, context)
-            return wakeUpTime
-        }
+            fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long{
+                val wakeUpTime = (nowSeconds + secondsRemaining) * 1000
+                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val intent = Intent(context, TimerExpiredReceiver::class.java)
+                val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
+                PrefUtil.setAlarmSetTime(nowSeconds, context)
+                return wakeUpTime
+            }
 
         fun removeAlarm(context: Context){
             val intent = Intent(context, TimerExpiredReceiver::class.java)
@@ -57,19 +57,19 @@ class TimerActivity : AppCompatActivity() {
         supportActionBar?.setIcon(R.drawable.ic_timer)
         supportActionBar?.title = "      Timer"
 
-        fab_start.setOnClickListener{v ->
+        fab_start.setOnClickListener{//v ->
             startTimer()
             timerState =  TimerState.Running
             updateButtons()
         }
 
-        fab_pause.setOnClickListener { v ->
+        fab_pause.setOnClickListener { //v ->
             timer.cancel()
             timerState = TimerState.Paused
             updateButtons()
         }
 
-        fab_stop.setOnClickListener { v ->
+        fab_stop.setOnClickListener { //v ->
             timer.cancel()
             onTimerFinished()
         }
